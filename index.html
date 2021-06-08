@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" href="/styles/buzzer.css">
+    <link rel="stylesheet" href="/styles/modbox.css">
+    <script src="/scripts/vue.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script defer src="/scripts/app.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="supreme-container">
+        <header>
+          <span>QBuzz 3</span>
+        </header>
+        <div class="main-container">
+          <div class="home-window" v-show="homeWindow">
+            <div class="home-welcome-modal" v-show="homeModal">
+              <div class="home-modal-title">Welcome to QBuzz!</div>
+              <div class="home-modal-color-divider"></div>
+              <div class="home-modal-btns">
+                <button @click="showJoinModal" class="home-modal-join-btn">Join</button>
+                <button @click="showHostModal" class="home-modal-back-btn">Host</button>
+              </div>
+            </div>
+            <div class="home-join-modal" v-show="joinModal">
+              <div class="home-modal-title">Join a Game</div>
+              <div class="home-modal-color-divider"></div>
+              <form id="home-join-form" @submit.prevent="joinRoom">
+                <table>
+                  <tr>
+                    <td><label for="home-join-name">Your Name</label></td>
+                    <td><input type="text" name="home-join-name" id="home-join-name" v-model="playerName" required></td>    
+                  </tr>
+                  <tr>
+                    <td><label for="home-join-code">Room ID</label></td>
+                    <td><input type="text" name="home-join-code" id="home-join-code" v-model="roomCode" required></td>
+                  </tr>
+                </table>
+                <div class="home-modal-btns">
+                  <button type="submit" class="home-modal-join-btn">Go to Room</button>
+                  <button type="button" @click="backHome" class="home-modal-back-btn">Back</button>  
+                </div>
+              </form>
+            </div>
+            <div class="home-host-modal" v-show="hostModal">
+              <div class="home-modal-title">Host a Game</div>
+              <div class="home-modal-color-divider"></div>
+              <form id="home-host-form" @submit.prevent="hostRoom">
+                <table>
+                  <tr>
+                    <td><label for="home-host-name">Your Name</label></td>
+                    <td><input type="text" name="home-host-name" id="home-host-name" v-model="playerName" required></td>
+                  </tr>
+                  <tr>
+                    <td>Room ID</td>
+                    <td>{{ roomCode }}</td>
+                  </tr>
+                </table>
+                <div class="home-modal-btns">
+                  <button type="submit" class="home-modal-join-btn">Host Room</button>
+                  <button type="button" @click="backHome" class="home-modal-back-btn">Back</button>  
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="guest-window" v-show="guestWindow">
+            <div class="buzzer-container">
+              <div class="black-box">
+                <div class="buzz-dot buzz-upper-left-dot"></div>
+                <div class="buzz-dot buzz-upper-right-dot"></div>
+                <div class="buzz-dot buzz-lower-left-dot"></div>
+                <div class="buzz-dot buzz-lower-right-dot"></div>
+                <div class="buzz-light">
+                  <div class="buzz-inner-light"></div>
+                </div>
+                <div @click="buzz" class="buzz-button">
+                  <div class="buzz-outer-button"></div>
+                  <div class="buzz-inner-button"></div>  
+                </div>
+                <div class="buzz-player-name"><span>{{ playerName }}</span></div>
+                <div class="buzz-bottom-dots">
+                  <div class="buzz-left-dot bottom-dot"></div>
+                  <div class="buzz-right-dot bottom-dot"></div>
+                </div>
+              </div>
+            </div>    
+          </div>
+
+          <div class="host-window" v-show="hostWindow">
+            <div class="moderator-container">
+              <div class="modbox">
+                <div class="mod-label">{{ playerName }}'s Room</div>
+                <div class="mod-display">
+                  <div class="mod-buzz-light"></div>
+                  <div class="mod-buzz-player">-----</div>  
+                </div>
+                <div class="mod-reset" @click="clear">
+                  <div class="mod-reset-button">
+                    <div class="mod-reset-inner"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer v-show="inGame">
+          <div>
+            <button @click="backHome" class="footer-back-btn">Exit</button>
+          </div>
+          <div class="footer-main-text">
+            Room {{ roomCode }}
+          </div>
+          <div></div>
+        </footer>
+      </div>
+    </div>
+
+    <div id="audio-container" style="display: none">
+      <audio style='display: none' id="team-1-buzzer" preload="auto">
+        <source src="./assets/buzzer-1.wav" type="audio/wav">
+      </audio>
+      <audio style='display: none' id="team-2-buzzer" preload="auto">
+        <source src="./assets/buzzer-2.wav" type="audio/wav">
+      </audio>  
+    </div>
+
+  </body>
+</html>
